@@ -16,11 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy
     steps:
-      - uses: actions/checkout@v2
-      - name: Run cargo check
-        uses: actions-rs/cargo@v1
-        with:
-          command: install wrangler
+      - uses: actions/checkout@v3
+      - name: Install wrangler
+        run: |
+          cargo install wrangler
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
