@@ -11,21 +11,24 @@ on:
           required: true
           default: 'dev'
 
+env:
+  CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Deploy
     steps:
       - uses: actions/checkout@v3
-      - name: Install wrangler
-        run: |
-          cargo install wrangler
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/cache@v2
         with:
-          toolchain: stable
-          target: wasm32-unknown-unknown
-      - name: Publish Worker
-        run: |
-          wrangler publish
-        env:
-          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - uses: actions/setup-node@v2.5.0
+        with:
+          node-version: '16.x'
+      - name: Publish
+        run: npx wrangler publish
